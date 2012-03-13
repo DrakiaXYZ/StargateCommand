@@ -1,0 +1,18 @@
+name: StargateCommand
+main: net.TheDgtl.StargateCommand.StargateCommand
+version: 0.0.1
+description: Command addon for the Stargate plugin for Bukkit
+author: Drakia
+depend: [Stargate]
+website: http://www.thedgtl.net
+commands:
+  sgc:
+    description: Used to reload the plugin. Console use only.
+    usage: /<command> reload - Used to reload the plugin. Console use only.
+permissions:
+  stargate.command.import:
+    description: Allow the user of /sgc import
+    default: op
+  stargate.command.export:
+    description: Allow the user of /sgc export
+    default: op
