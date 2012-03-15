@@ -7,12 +7,21 @@ depend: [Stargate]
 website: http://www.thedgtl.net
 commands:
   sgc:
-    description: Used to reload the plugin. Console use only.
-    usage: /<command> reload - Used to reload the plugin. Console use only.
+    description: StargateCommand import/export commands.
+    usage: |
+      /<command> <import/export/cancel> <gate> [force]
+      Type: "/<command> import" for help with import
+      Type: "/<command> export" for help with export
+      Type: "/<command> cancel" to cancel any pending SGC action
+  dial:
+    description: Dial a stargate
+    usage: /<command> <destination> [source] [network]
 permissions:
   stargate.command.import:
-    description: Allow the user of /sgc import
+    description: Allow the use of /sgc import
     default: op
   stargate.command.export:
-    description: Allow the user of /sgc export
+    description: Allow the use of /sgc export
     default: op
+  stargate.command.dial:
+    description: Allow the use of /dial

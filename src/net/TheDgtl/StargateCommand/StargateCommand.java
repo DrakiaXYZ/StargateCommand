@@ -6,6 +6,7 @@ import java.util.logging.Logger;
 
 import net.TheDgtl.Stargate.Blox;
 import net.TheDgtl.Stargate.Gate;
+import net.TheDgtl.Stargate.Portal;
 import net.TheDgtl.Stargate.Stargate;
 
 import org.bukkit.ChatColor;
@@ -263,6 +264,29 @@ public class StargateCommand extends JavaPlugin {
 		return gate;
 	}
 	
+	public void dialGate(Player player, String dest, String source, String network) {
+		Portal sourcePortal = Portal.getByName(source, network);
+		Portal destPortal = Portal.getByName(dest, network);
+		if (sourcePortal == null || destPortal == null) {
+			sendMessage(player, "The specified Stargate connection does not exist", true);
+			return;
+		}
+		if (sourcePortal.getWorld() != player.getWorld() && destPortal.getWorld() != player.getWorld()) {
+			sendMessage(player, "Neither of the specified gates are on your world", true);
+			return;
+		}
+		if (!Stargate.canAccessNetwork(player, network)) {
+			sendMessage(player, "You do not have access to that gate network", true);
+			return;
+		}
+		sourcePortal.setDestination(destPortal);
+		if (!sourcePortal.open(player, false)) {
+			sendMessage(player, "There was an error opening the gate", true);
+			return;
+		}
+		sendMessage(player, "The gate has been connected and opened", false);
+	}
+	
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 		if (!(sender instanceof Player)) {
@@ -271,7 +295,8 @@ public class StargateCommand extends JavaPlugin {
 		}
 		Player player = (Player)sender;
 		// SGC import/export
-		if (command.getName().equalsIgnoreCase("sgc") && args.length > 0) {
+		if (command.getName().equalsIgnoreCase("sgc")) {
+			if (args.length == 0) return false;
 			// Import
 			if (args[0].equalsIgnoreCase("import")) {
 				if (!player.hasPermission("stargate.command.import")) {
@@ -279,7 +304,9 @@ public class StargateCommand extends JavaPlugin {
 					return true;
 				}
 				if (args.length < 2) {
-					StargateCommand.sendMessage(player, "You did not specify a gate to import", true);
+					sendMessage(player, "Usage: /sgc import <gate> [force]", false);
+					sendMessage(player, "Use force to ignore terrain intersection", false);
+					sendMessage(player, "Example: /sgc import super force", false);
 					return true;
 				}
 				if (Gate.getGateByName(args[1] + ".gate") == null) {
@@ -297,7 +324,9 @@ public class StargateCommand extends JavaPlugin {
 					return true;
 				}
 				if (args.length < 2) {
-					sendMessage(player, "You must provide a gate name", true);
+					StargateCommand.sendMessage(player, "Usage: /sgc export <gate> [force]", false);
+					StargateCommand.sendMessage(player, "Use force to overwrite existing .gate files", false);
+					sendMessage(player, "Example: /sgc export super force", false);
 					return true;
 				}
 				boolean force = false;
@@ -313,6 +342,25 @@ public class StargateCommand extends JavaPlugin {
 			} else if (args[0].equalsIgnoreCase("cancel")) {
 				players.remove(player);
 				StargateCommand.sendMessage(player, "Command cancelled", false);
+			}
+			return true;
+		} else if (command.getName().equalsIgnoreCase("dial")) {
+			if (args.length < 1 || args.length > 2) return false;
+			String dest = null;
+			String source = null;
+			String network = null;
+			dest = args[0];
+			if (args.length > 1) {
+				if (args.length < 2) {
+					sendMessage(player, "You must provide a network to direct dial a gate", true);
+					return true;
+				}
+				source = args[1];
+				network = args[2];
+				dialGate(player, dest, source, network);
+			} else {
+				players.put(player, new SGCPlayer(player, Action.DIAL, args));
+				sendMessage(player, "The next Stargate you activate will have " + dest + " set as the destination if available", false);
 			}
 			return true;
 		}
@@ -336,6 +384,7 @@ public class StargateCommand extends JavaPlugin {
 	
 	public enum Action {
 		IMPORT,
-		EXPORT
+		EXPORT,
+		DIAL
 	}
 }

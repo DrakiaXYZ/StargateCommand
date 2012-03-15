@@ -1,6 +1,7 @@
 package net.TheDgtl.StargateCommand;
 
 import net.TheDgtl.Stargate.Gate;
+import net.TheDgtl.Stargate.event.StargateActivateEvent;
 import net.TheDgtl.StargateCommand.StargateCommand.Action;
 
 import org.bukkit.Material;
@@ -74,6 +75,20 @@ public class SGCListener implements Listener {
 				sgc.exportGate(player, block);
 				sgc.players.remove(player);
 			}
+		}
+	}
+	
+	@EventHandler
+	public void onStargateActivate(StargateActivateEvent event) {
+		Player player = event.getPlayer();
+		SGCPlayer sPlayer = sgc.players.get(player);
+		if (sPlayer == null) return;
+		if (sPlayer.action != Action.DIAL) return;
+		if (event.getDestinations().contains(sPlayer.args[0])) {
+			event.setDestination(sPlayer.args[0]);
+		} else {
+			StargateCommand.sendMessage(player, "The specified destination does not exist for this gate. Exiting", true);
+			sgc.players.remove(player);
 		}
 	}
 }
