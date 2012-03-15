@@ -279,11 +279,10 @@ public class StargateCommand extends JavaPlugin {
 			sendMessage(player, "You do not have access to that gate network", true);
 			return;
 		}
+		sourcePortal.activate(player);
 		sourcePortal.setDestination(destPortal);
-		if (!sourcePortal.open(player, false)) {
-			sendMessage(player, "There was an error opening the gate", true);
-			return;
-		}
+		Stargate.openPortal(player, sourcePortal);
+		sourcePortal.drawSign();
 		sendMessage(player, "The gate has been connected and opened", false);
 	}
 	
@@ -345,22 +344,23 @@ public class StargateCommand extends JavaPlugin {
 			}
 			return true;
 		} else if (command.getName().equalsIgnoreCase("dial")) {
-			if (args.length < 1 || args.length > 2) return false;
+			if (args.length < 1 || args.length > 3) return false;
 			String dest = null;
 			String source = null;
 			String network = null;
-			dest = args[0];
-			if (args.length > 1) {
-				if (args.length < 2) {
-					sendMessage(player, "You must provide a network to direct dial a gate", true);
-					return true;
-				}
-				source = args[1];
-				network = args[2];
-				dialGate(player, dest, source, network);
-			} else {
+			if (args.length == 1) {
+				dest = args[0];
 				players.put(player, new SGCPlayer(player, Action.DIAL, args));
-				sendMessage(player, "The next Stargate you activate will have " + dest + " set as the destination if available", false);
+				sendMessage(player, "The next Stargate you activate will connect to " + dest + " if available", false);
+			} else if (args.length > 1) {
+				source = args[0];
+				dest = args[1];
+				if (args.length < 2) {
+					network = args[2];
+				} else {
+					network = Stargate.getDefaultNetwork();
+				}
+				dialGate(player, dest, source, network);
 			}
 			return true;
 		}

@@ -1,6 +1,8 @@
 package net.TheDgtl.StargateCommand;
 
 import net.TheDgtl.Stargate.Gate;
+import net.TheDgtl.Stargate.Portal;
+import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.event.StargateActivateEvent;
 import net.TheDgtl.StargateCommand.StargateCommand.Action;
 
@@ -80,15 +82,25 @@ public class SGCListener implements Listener {
 	
 	@EventHandler
 	public void onStargateActivate(StargateActivateEvent event) {
+		Portal portal = event.getPortal();
 		Player player = event.getPlayer();
 		SGCPlayer sPlayer = sgc.players.get(player);
 		if (sPlayer == null) return;
 		if (sPlayer.action != Action.DIAL) return;
-		if (event.getDestinations().contains(sPlayer.args[0])) {
-			event.setDestination(sPlayer.args[0]);
-		} else {
+		sgc.players.remove(player);
+		Portal destPortal = Portal.getByName(sPlayer.args[0], portal.getNetwork());
+		if (destPortal == null) {
 			StargateCommand.sendMessage(player, "The specified destination does not exist for this gate. Exiting", true);
-			sgc.players.remove(player);
+		} else {
+			if (!Stargate.canAccessNetwork(player, portal.getNetwork())) {
+				StargateCommand.sendMessage(player, "You do not have access to that network.", true);
+				return;
+			}
+			event.setCancelled(true);
+			portal.activate(player);
+			portal.setDestination(destPortal);
+			Stargate.openPortal(player, portal);
+			portal.drawSign();
 		}
 	}
 }

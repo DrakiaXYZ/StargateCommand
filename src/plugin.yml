@@ -15,7 +15,9 @@ commands:
       Type: "/<command> cancel" to cancel any pending SGC action
   dial:
     description: Dial a stargate
-    usage: /<command> <destination> [source] [network]
+    usage: |
+      /<command> <destination>
+      /<command> <source> <destination> [network]
 permissions:
   stargate.command.import:
     description: Allow the use of /sgc import
