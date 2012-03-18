@@ -289,7 +289,7 @@ public class StargateCommand extends JavaPlugin {
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 		if (!(sender instanceof Player)) {
-			sender.sendMessage("[SGC] This command can only be used ingame");
+			sendMessage(sender, "This command can only be used ingame", true);
 			return true;
 		}
 		Player player = (Player)sender;
@@ -349,10 +349,18 @@ public class StargateCommand extends JavaPlugin {
 			String source = null;
 			String network = null;
 			if (args.length == 1) {
+				if (!player.hasPermission("stargate.command.dial.interactive")) {
+					sendMessage(player, "Permission Denied", true);
+					return true;
+				}
 				dest = args[0];
 				players.put(player, new SGCPlayer(player, Action.DIAL, args));
 				sendMessage(player, "The next Stargate you activate will connect to " + dest + " if available", false);
 			} else if (args.length > 1) {
+				if (!player.hasPermission("stargate.command.dial.direct")) {
+					sendMessage(player, "Permission Denied", true);
+					return true;
+				}
 				source = args[0];
 				dest = args[1];
 				if (args.length < 2) {

@@ -27,3 +27,7 @@ permissions:
     default: op
   stargate.command.dial:
     description: Allow the use of /dial
+    default: true
+    children:
+      stargate.command.dial.interactive: true
+      stargate.command.dial.direct: false
