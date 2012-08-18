@@ -298,7 +298,7 @@ public class StargateCommand extends JavaPlugin {
 			if (args.length == 0) return false;
 			// Import
 			if (args[0].equalsIgnoreCase("import")) {
-				if (!player.hasPermission("stargate.command.import")) {
+				if (!Stargate.hasPerm(player, "stargate.command.import")) {
 					StargateCommand.sendMessage(player, "Permission Denied", true);
 					return true;
 				}
@@ -318,7 +318,7 @@ public class StargateCommand extends JavaPlugin {
 				players.put(player, new SGCPlayer(player, Action.IMPORT, args));
 			// Export
 			} else if (args[0].equalsIgnoreCase("export")) {
-				if (!player.hasPermission("stargate.command.export")) {
+				if (!Stargate.hasPerm(player, "stargate.command.export")) {
 					StargateCommand.sendMessage(player, "Permission Denied", true);
 					return true;
 				}
@@ -349,7 +349,7 @@ public class StargateCommand extends JavaPlugin {
 			String source = null;
 			String network = null;
 			if (args.length == 1) {
-				if (!player.hasPermission("stargate.command.dial.interactive")) {
+				if (!Stargate.hasPerm(player, "stargate.command.dial.interactive")) {
 					sendMessage(player, "Permission Denied", true);
 					return true;
 				}
@@ -357,13 +357,13 @@ public class StargateCommand extends JavaPlugin {
 				players.put(player, new SGCPlayer(player, Action.DIAL, args));
 				sendMessage(player, "The next Stargate you activate will connect to " + dest + " if available", false);
 			} else if (args.length > 1) {
-				if (!player.hasPermission("stargate.command.dial.direct")) {
+				if (!Stargate.hasPerm(player, "stargate.command.dial.direct")) {
 					sendMessage(player, "Permission Denied", true);
 					return true;
 				}
 				source = args[0];
 				dest = args[1];
-				if (args.length < 2) {
+				if (args.length > 2) {
 					network = args[2];
 				} else {
 					network = Stargate.getDefaultNetwork();

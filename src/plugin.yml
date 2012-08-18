@@ -1,6 +1,6 @@
 name: StargateCommand
 main: net.TheDgtl.StargateCommand.StargateCommand
-version: 0.0.1
+version: 0.0.2
 description: Command addon for the Stargate plugin for Bukkit
 author: Drakia
 depend: [Stargate]
