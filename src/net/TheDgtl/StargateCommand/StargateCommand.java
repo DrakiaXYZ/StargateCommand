@@ -341,6 +341,17 @@ public class StargateCommand extends JavaPlugin {
 			} else if (args[0].equalsIgnoreCase("cancel")) {
 				players.remove(player);
 				StargateCommand.sendMessage(player, "Command cancelled", false);
+			} else if (args[0].equalsIgnoreCase("owner")) {
+				if (!Stargate.hasPerm(player, "stargate.command.owner")) {
+					StargateCommand.sendMessage(player, "Permission Denied", true);
+					return true;
+				}
+				if (args.length != 2) {
+					StargateCommand.sendMessage(player, "Usage: /sgc owner <player>", false);
+					return true;
+				}
+				StargateCommand.sendMessage(player, "Please right-click a target gate to assign ownership", false);
+				players.put(player, new SGCPlayer(player, Action.OWNER, args));
 			}
 			return true;
 		} else if (command.getName().equalsIgnoreCase("dial")) {
@@ -393,6 +404,7 @@ public class StargateCommand extends JavaPlugin {
 	public enum Action {
 		IMPORT,
 		EXPORT,
-		DIAL
+		DIAL,
+		OWNER
 	}
 }

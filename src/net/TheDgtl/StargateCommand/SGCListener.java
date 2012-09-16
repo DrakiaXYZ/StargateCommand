@@ -23,12 +23,23 @@ public class SGCListener implements Listener {
 	@EventHandler
 	public void onPlayerInteract(PlayerInteractEvent event) {
 		// We want right-click block only
-		if (event.getAction() != org.bukkit.event.block.Action.RIGHT_CLICK_BLOCK) return;
-		
 		Player player = event.getPlayer();
-		Block block = event.getClickedBlock();
+		Block block = null;
+		if (event.isCancelled() && event.getAction() == org.bukkit.event.block.Action.RIGHT_CLICK_AIR) {
+			try {
+				block = player.getTargetBlock(null, 5);
+			} catch (IllegalStateException ex) {
+				// We can safely ignore this exception, it only happens in void or max height
+				return;
+			}
+		} else {
+			block = event.getClickedBlock();
+		}
+		
+		if (block == null || block.getType() == Material.AIR) return;
+		
 		SGCPlayer sPlayer = sgc.players.get(player);
-		if (sPlayer == null || block == null) return;
+		if (sPlayer == null) return;
 		if (sPlayer.action == Action.IMPORT) {
 			event.setCancelled(true);
 			event.setUseInteractedBlock(Result.DENY);
@@ -77,6 +88,20 @@ public class SGCListener implements Listener {
 				sgc.exportGate(player, block);
 				sgc.players.remove(player);
 			}
+		} else if (sPlayer.action == Action.OWNER) {
+			event.setCancelled(true);
+			event.setUseInteractedBlock(Result.DENY);
+			event.setUseItemInHand(Result.DENY);
+			Portal portal = Portal.getByBlock(block);
+			if (portal == null) {
+				StargateCommand.sendMessage(player, "You did not select a gate, exiting", true);
+				sgc.players.remove(player);
+				return;
+			}
+			portal.setOwner(sPlayer.args[1]);
+			Portal.saveAllGates(portal.getWorld());
+			sgc.players.remove(player);
+			StargateCommand.sendMessage(player, "Owner of " + portal.getName() + " on network " + portal.getNetwork() + " set to " + sPlayer.args[1], false);
 		}
 	}
 	
