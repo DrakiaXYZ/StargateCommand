@@ -125,19 +125,19 @@ public class StargateCommand extends JavaPlugin {
 		int modX = 0;
 		int modZ = 0;
 		if (topleft.getRelative(BlockFace.EAST).getType() == Material.BEDROCK) {
-			modZ = -1;
+			modX = 1;
 			tmp++;
 		}
 		if (topleft.getRelative(BlockFace.WEST).getType() == Material.BEDROCK) {
-			modZ = 1;
-			tmp++;
-		}
-		if (topleft.getRelative(BlockFace.NORTH).getType() == Material.BEDROCK) {
 			modX = -1;
 			tmp++;
 		}
+		if (topleft.getRelative(BlockFace.NORTH).getType() == Material.BEDROCK) {
+			modZ = -1;
+			tmp++;
+		}
 		if (topleft.getRelative(BlockFace.SOUTH).getType() == Material.BEDROCK) {
-			modX = 1;
+			modZ = 1;
 			tmp++;
 		}
 		if (tmp != 1 || topleft.getRelative(BlockFace.DOWN).getType() != Material.BEDROCK) {
